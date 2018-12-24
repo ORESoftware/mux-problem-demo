@@ -17,10 +17,9 @@ import (
 func main() {
 
 
-	routerParent := mux.NewRouter()
+	routerParent := mux.NewRouter()  // root router
 	routerParent.Use(mw.ErrorHandler())
 	routerParent.Use(mw.LoggingHandler())
-
 
 	routerParent.HandleFunc("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -48,8 +47,8 @@ func main() {
 	//router.Use(errorMiddleware)
 	//router.Use(authMiddleware)
 
-	router.Use(mw.ErrorHandler())
-	router.Use(mw.LoggingHandler())
+	router.Use(mw.ErrorHandler())  // we call this again
+	router.Use(mw.LoggingHandler()) // we call this again
 
 
 	router.HandleFunc("/dogs", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -83,11 +82,12 @@ func main() {
 		handler := routes.ShareHandler{}
 		subRouter := router.PathPrefix("/").Subrouter()
 
-		subRouter.Use(mw.ErrorHandler())
-		subRouter.Use(mw.LoggingHandler())
+		subRouter.Use(mw.ErrorHandler())   // we call this again
+		subRouter.Use(mw.LoggingHandler())  // we call this again
 
 		subRouter.HandleFunc("/foo", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+			// *>*>* the middleware doesn't get hit for this route
 			log.Info("the logging handling middleware should have logged something before this.")
 			panic("this should get trapped by error handler 4.")
 
