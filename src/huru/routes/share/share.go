@@ -8,7 +8,6 @@ import (
 	"huru/mw"
 	"huru/utils"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"sync"
@@ -38,7 +37,9 @@ func (h Handler) Mount(router *mux.Router, v Injection) Handler {
 
 	//router.HandleFunc("/share", mw.AdaptFuncs(h.makeGetMany(v), auth, errorh, logging)).Methods("GET")
 
-	mwList := mw.List(mw.Error(), mw.Auth("x-huru-api-token"))
+	//mwList := mw.List(mw.Error(), mw.Auth("x-huru-api-token"))
+
+	mwList := mw.List(mw.Auth("x-huru-api-token"))
 
 	router.HandleFunc("/share", mw.Middleware(mwList, h.makeGetMany(v))).Methods("GET")
 	router.HandleFunc("/share/{id}", mw.Middleware(mwList,h.makeGetOne(v))).Methods("GET")
@@ -56,7 +57,9 @@ func (h Handler) makeGetMany(v Injection) http.HandlerFunc {
 		//mw.Auth("x-huru-api-token"),
 		//mw.Allow("admin"),  /// HERE IS ACL / ROLES
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			log.Println("now we are sending response.");
+
+			panic("shizzz")
+
 			json.NewEncoder(w).Encode(v.Share)
 		}),
 	)

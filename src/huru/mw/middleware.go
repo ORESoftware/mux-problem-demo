@@ -85,9 +85,16 @@ func LoggingX(next http.HandlerFunc) http.HandlerFunc {
 	})
 }
 
+//func LoggingHandler() mux.MiddlewareFunc {
+//	logger := Logging(struct{}{});
+//	return mux.MiddlewareFunc(func(next http.Handler) http.Handler {
+//		log.Println("logging middleware registered");
+//		return logger(next.ServeHTTP);
+//	})
+//}
+
 func LoggingHandler() mux.MiddlewareFunc {
 	logger := Logging(struct{}{});
-	log.Println("this is the thing.");
 	return func(next http.Handler) http.Handler {
 		log.Println("logging middleware registered");
 		return logger(next.ServeHTTP);
@@ -170,10 +177,10 @@ type Z = func(next http.HandlerFunc) http.Handler;
 func AuthHandler() mux.MiddlewareFunc {  // used to return Z, now returns mux.MiddlewareFunc
 	huruApiToken := "x-huru-api-token"
 	auth := Auth(huruApiToken)
-	return func(next http.Handler) http.Handler {
+	return mux.MiddlewareFunc(func(next http.Handler) http.Handler {
 		log.Println("auth middleware registered.")
 		return auth(next.ServeHTTP)
-	}
+	})
 }
 
 func Error() Adapter {
@@ -239,9 +246,16 @@ func Error() Adapter {
 	}
 }
 
+//
+//func ErrorHandler() mux.MiddlewareFunc {
+//	handler := Error();
+//	return mux.MiddlewareFunc(func(next http.Handler) http.Handler {
+//		return handler(next.ServeHTTP);
+//	})
+//}
+
 
 func ErrorHandler() mux.MiddlewareFunc {
-	log.Println("error handling middleware registered");
 	handler := Error();
 	return func(next http.Handler) http.Handler {
 		return handler(next.ServeHTTP);
@@ -278,12 +292,7 @@ func Middleware(adapters ...interface{}) http.HandlerFunc {
 
 	counter = counter + 1;
 
-	log.Info(counter,"length of adapters a:",len(adapters))
-
-	//adapters = utils.FlattenDeep(adapters...)
 	adapters = utils.FlattenDeep(adapters)
-
-	log.Info(counter,"length of adapters b:", len(adapters))
 
 	if len(adapters) < 1 {
 		panic("Adapters need to have length > 0.");
@@ -304,21 +313,10 @@ func Middleware(adapters ...interface{}) http.HandlerFunc {
 
 		adapt := adapters[i]
 
-		adapt, ok = adapt.(Adapter);
-
-		if ok == false {
-			log.Warn("Could not be cast to adapter func.");
-		} else{
-			log.Info("Could cast to adapter func.")
-		}
+		adapt, _ = adapt.(Adapter);
 
 		h = (adapt.(Adapter))(h)
 
-		if ok == false {
-			log.Warn("Was very false")
-		}
-
-		log.Info("did the nasty now.");
 	}
 
 	return h
