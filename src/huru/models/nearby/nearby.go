@@ -1,7 +1,6 @@
 package nearby
 
 import (
-	"huru/dbs"
 	"reflect"
 	"sync"
 	"time"
@@ -65,29 +64,3 @@ func Init() Map {
 	return nearby
 }
 
-// CreateTable whatever
-func CreateTable() {
-
-	// s1 := Nearby{id: 1, me: 1, you: 2, contactTime: strconv.Itoa(time.Now())}
-
-	db := dbs.GetDatabaseConnection()
-	db.Exec(schema)
-
-	tx, err := db.Begin()
-
-	if err != nil {
-		panic("could not begin transaction")
-	}
-
-	s1 := nearby["1"]
-	s2 := nearby["2"]
-
-	tx.Exec("INSERT INTO nearby (me, you, contactTime) VALUES ($1, $2, $3)", s1.Me, s1.You, s1.ContactTime)
-	tx.Exec("INSERT INTO nearby (me, you, contactTime) VALUES ($1, $2, $3)", s2.Me, s2.You, s2.ContactTime)
-
-	// Named queries can use structs, so if you have an existing struct (i.e. person := &Person{}) that you have populated, you can pass it in as &person
-	// tx.NamedExec("INSERT INTO nearby (me, you, contactTime) VALUES (:me, :you, :contactTime)", s1)
-	// tx.NamedExec("INSERT INTO nearby (me, you, contactTime) VALUES (:me, :you, :contactTime)", s2)
-	tx.Commit()
-
-}

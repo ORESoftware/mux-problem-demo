@@ -1,7 +1,6 @@
 package person
 
 import (
-	"huru/dbs"
 	"sync"
 )
 
@@ -68,29 +67,4 @@ func Init() (Map,Map, Map) {
 
 	mtx.Unlock()
 	return peopleById, peopleByHandle, peopleByEmail
-}
-
-// CreateTable whatever
-func CreateTable() {
-
-	db := dbs.GetDatabaseConnection()
-	db.Exec(schema)
-
-	tx, err := db.Begin()
-
-	if err != nil {
-		panic("could not begin transaction")
-	}
-
-	s1 := peopleById["1"]
-	s2 := peopleById["2"]
-
-	tx.Exec("INSERT INTO person (firstname, lastname, email) VALUES ($1, $2, $3)", s1.Firstname, s1.Lastname, s1.Email)
-	tx.Exec("INSERT INTO person (firstname, lastname, email) VALUES ($1, $2, $3)", s2.Firstname, s2.Lastname, s2.Email)
-
-	// Named queries can use structs, so if you have an existing struct (i.e. person := &Person{}) that you have populated, you can pass it in as &person
-
-	// tx.NamedExec("INSERT INTO person (firstname, lastname, email) VALUES (:Firstname, :Lastname, :Email)", s1)
-	// tx.NamedExec("INSERT INTO person (firstname, lastname, email) VALUES (:Firstname, :Lastname, :Email)", s2)
-	tx.Commit()
 }

@@ -1,7 +1,6 @@
 package share
 
 import (
-	"huru/dbs"
 	"sync"
 )
 
@@ -53,28 +52,4 @@ func Init() Map {
 	return shares
 }
 
-// CreateTable whatever
-func CreateTable() {
 
-	s1 := shares["1"]
-	s2 := shares["2"]
-	s3 := shares["3"]
-
-	db := dbs.GetDatabaseConnection()
-	db.Exec(schema)
-
-	tx, err := db.Begin()
-	if err != nil {
-		panic("could not begin transaction")
-	}
-
-	tx.Exec("INSERT INTO share (me, you, fieldName, fieldValue) VALUES ($1, $2, $3, $4)", s1.Me, s1.You, s1.FieldName, s1.FieldValue)
-	tx.Exec("INSERT INTO share (me, you, fieldName, fieldValue) VALUES ($1, $2, $3, $4)", s2.Me, s2.You, s2.FieldName, s2.FieldValue)
-	tx.Exec("INSERT INTO share (me, you, fieldName, fieldValue) VALUES ($1, $2, $3, $4)", s3.Me, s3.You, s3.FieldName, s3.FieldValue)
-
-	// Named queries can use structs, so if you have an existing struct (i.e. person := &Person{}) that you have populated, you can pass it in as &person
-	// tx.NamedExec("INSERT INTO share (me, you, sharePhone, shareEmail) VALUES (:me, :you, :sharePhone, :shareEmail)", s1)
-	// tx.NamedExec("INSERT INTO share (me, you, sharePhone, shareEmail) VALUES (:me, :you, :sharePhone, :shareEmail)", s2)
-	tx.Commit()
-
-}

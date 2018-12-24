@@ -3,7 +3,6 @@ package utils
 import (
 	"bytes"
 	"encoding/json"
-	"huru/typings"
 	"log"
 	"os"
 	"path"
@@ -82,27 +81,27 @@ func FlattenDeep2(args ...interface{}) []interface{} {
 	return list;
 }
 
-func WriteToDocs(v interface{}) {
-
-	z := typings.Entities{}
-
-	log.Fatal(z)
-
-	f, err := os.OpenFile(docsFileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
-
-	defer f.Close()
-
-	if err != nil {
-		panic(err)
-	}
-
-	buf := bytes.NewBuffer(nil)
-	json.NewEncoder(buf).Encode(v)
-
-	if _, err = f.WriteString(buf.String()); err != nil {
-		panic(err)
-	}
-}
+//func WriteToDocs(v interface{}) {
+//
+//	z := typings.Entities{}
+//
+//	log.Fatal(z)
+//
+//	f, err := os.OpenFile(docsFileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0600)
+//
+//	defer f.Close()
+//
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	buf := bytes.NewBuffer(nil)
+//	json.NewEncoder(buf).Encode(v)
+//
+//	if _, err = f.WriteString(buf.String()); err != nil {
+//		panic(err)
+//	}
+//}
 
 // JoinArgs joins strings
 func JoinArgs(strangs ...string) string {

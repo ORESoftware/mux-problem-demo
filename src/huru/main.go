@@ -6,14 +6,12 @@ import (
 	"huru/mw"
 	"io"
 
-	"huru/migrations"
 	"huru/models"
 	"huru/routes"
 	"net/http"
 	"os"
 
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -55,12 +53,6 @@ func ExampleHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	// db := dbs.GetDatabaseConnection()
-
-	if false && os.Getenv("huru_env") == "db" {
-		migrations.CreateHuruTables()
-	}
 
 
 	routerParent := mux.NewRouter()
