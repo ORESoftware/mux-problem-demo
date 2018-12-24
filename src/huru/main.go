@@ -71,21 +71,6 @@ func main() {
 	//router.Use(authMiddleware)
 
 
-	byId, byHandle, byEmail := models.PersonInit()
-
-	// register and login
-	{
-		handler := routes.LoginHandler{}
-		subRouter := router.PathPrefix("/").Subrouter()
-		handler.Mount(subRouter,  routes.LoginInjection{PeopleById: byId, PeopleByHandle: byHandle, PeopleByEmail:byEmail});
-	}
-
-	{
-		handler := routes.RegisterHandler{}
-		subRouter := router.PathPrefix("/").Subrouter()
-		handler.Mount(subRouter, routes.RegisterInjection{PeopleById: byId, PeopleByHandle: byHandle, PeopleByEmail:byEmail})
-	}
-
 	{
 		handler := routes.PersonDataHandler{}
 		subRouter := router.PathPrefix("/").Subrouter()
@@ -94,13 +79,6 @@ func main() {
 		handler.Mount(subRouter, routes.PersonDataInjection{DataFields: models.DataFieldsInit()})
 	}
 
-	{
-		handler := routes.PersonHandler{}
-		subRouter := router.PathPrefix("/").Subrouter()
-		//subRouter.Use(mw.Auth)
-		subRouter.Use(mw.AuthHandler())
-		handler.Mount(subRouter, routes.PersonInjection{PeopleById: byId, PeopleByHandle: byHandle, PeopleByEmail:byEmail})
-	}
 
 	{
 		// nearby

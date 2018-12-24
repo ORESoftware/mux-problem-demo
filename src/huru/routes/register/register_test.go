@@ -1,2 +1,0 @@
-package register_test
-

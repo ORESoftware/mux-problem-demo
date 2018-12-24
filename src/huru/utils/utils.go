@@ -2,8 +2,6 @@ package utils
 
 import (
 	"bytes"
-	"encoding/json"
-	"log"
 	"os"
 	"path"
 	"reflect"
