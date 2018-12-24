@@ -1,0 +1,13 @@
+.vscode
+.idea
+bin
+pkg
+src/*
+!src/huru
+
+*.zip
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
