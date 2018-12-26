@@ -76,6 +76,16 @@ func Logging(v interface{}) Adapter {
 	}
 }
 
+
+func Context(v interface{}) Adapter {
+	return func(next http.HandlerFunc) http.HandlerFunc {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			context.Set(r, "foo","bar");
+			next(w, r)
+		})
+	}
+}
+
 func LoggingX(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Do stuff here
@@ -98,6 +108,15 @@ func LoggingHandler() mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		log.Println("logging middleware registered");
 		return logger(next.ServeHTTP);
+	}
+}
+
+
+func ContextHandler() mux.MiddlewareFunc {
+	ctx := Context(struct{}{});
+	return func(next http.Handler) http.Handler {
+		log.Println("logging middleware registered");
+		return ctx(next.ServeHTTP);
 	}
 }
 

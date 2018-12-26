@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/context"
 	"huru/models"
 	"huru/mw"
 	"huru/routes"
@@ -13,11 +14,9 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-
 func main() {
 
-
-	routerParent := mux.NewRouter()  // root router
+	routerParent := mux.NewRouter() // root router
 	routerParent.Use(mw.ErrorHandler())
 	routerParent.Use(mw.LoggingHandler())
 
@@ -27,7 +26,6 @@ func main() {
 		panic("this should get trapped by error handler 1.")
 
 	}))
-
 
 	routerParent.HandleFunc("/dogs", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -47,9 +45,8 @@ func main() {
 	//router.Use(errorMiddleware)
 	//router.Use(authMiddleware)
 
-	router.Use(mw.ErrorHandler())  // we call this again
+	router.Use(mw.ErrorHandler())   // we call this again
 	router.Use(mw.LoggingHandler()) // we call this again
-
 
 	router.HandleFunc("/dogs", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -57,7 +54,6 @@ func main() {
 		panic("this should get trapped by error handler 3.")
 
 	}))
-
 
 	{
 		handler := routes.PersonDataHandler{}
@@ -67,7 +63,6 @@ func main() {
 		subRouter.Use(mw.AuthHandler())
 		handler.Mount(subRouter, routes.PersonDataInjection{DataFields: models.DataFieldsInit()})
 	}
-
 
 	{
 		// nearby
@@ -83,20 +78,33 @@ func main() {
 		subRouter := router.PathPrefix("/").Subrouter()
 
 		subRouter.Use(mw.ErrorHandler())   // we call this again
-		subRouter.Use(mw.LoggingHandler())  // we call this again
+		subRouter.Use(mw.LoggingHandler()) // we call this again
+
+		subRouter.Use(mw.ContextHandler())
 
 		subRouter.HandleFunc("/foo", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			// *>*>* the middleware doesn't get hit for this route
 			log.Info("the logging handling middleware should have logged something before this.")
-			panic("this should get trapped by error handler 4.")
+			//panic("this should get trapped by error handler 4.")
+
+			ctx, ok:=context.Get(r,"foo").(string)
+
+			if ok == false {
+				ctx = "fail"
+			}
+
+			json.NewEncoder(w).Encode(struct {
+				Message string
+			}{
+				Message: ctx,
+			})
 
 		}))
 
 		//subRouter.Use(mw.ErrorHandler());
 		handler.Mount(subRouter, routes.ShareInjection{Share: models.ShareInit()})
 	}
-
 
 	handler404 := func(w http.ResponseWriter, r *http.Request) {
 
@@ -109,7 +117,6 @@ func main() {
 
 	router.NotFoundHandler = http.HandlerFunc(handler404);
 	routerParent.NotFoundHandler = http.HandlerFunc(handler404)
-
 
 	host := os.Getenv("huru_api_host")
 	port := os.Getenv("huru_api_port")
