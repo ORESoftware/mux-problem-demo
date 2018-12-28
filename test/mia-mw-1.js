@@ -36,11 +36,8 @@ const req = http.get({
             return;
         }
 
-
         assert.strictEqual(parsed.Message,"this should get trapped by error handler 3")
-
-    })
-
+    });
 
 });
 
